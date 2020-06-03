@@ -1,5 +1,7 @@
 package io.github.lukeeff.dlinkedlist.list;
 
+import java.util.Iterator;
+
 public class DLCList<T> implements IList<T> {
 
     private Node<T> start;
@@ -15,12 +17,6 @@ public class DLCList<T> implements IList<T> {
         return true;
     }
 
-    /**
-     *
-     *
-     * @param element the element to be added to the list.
-     * @return
-     */
     @Override
     public boolean add(T element) {
         if(start == null) {
@@ -35,15 +31,26 @@ public class DLCList<T> implements IList<T> {
         return true;
     }
 
+    public Node<T> getNode(int index) {
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException("bad index: " + index);
+        }
+        Node<T> cursor = start;
+        for (int i = 0; i < index; i++) {
+            cursor = cursor.getNext();
+        }
+        return cursor;
+    }
 
     @Override
     public boolean addFirst(T element) {
-        Node<T> node = new Node<>(element);
+        add(0, element);
         return true;
     }
 
     @Override
     public boolean addLast(T element) {
+        add(element);
         return true;
     }
 
@@ -54,12 +61,12 @@ public class DLCList<T> implements IList<T> {
 
     @Override
     public void deleteFirst() {
-
+        delete(0);
     }
 
     @Override
     public void deleteLast() {
-
+        delete(size);
     }
 
     @Override
@@ -69,17 +76,25 @@ public class DLCList<T> implements IList<T> {
 
     @Override
     public void clear() {
-
+        start = null;
+        size = 0;
     }
 
     @Override
     public boolean contains(T object) {
+        boolean found = false;
+
+        for(int i = 0; i < size; i++) {
+            if()
+        }
+
         return true;
     }
 
     @Override
     public T get(int index) {
-        return start.getData();
+        Node<T> node = getNode(index);
+        return node.getData();
     }
 
     @Override
@@ -96,5 +111,39 @@ public class DLCList<T> implements IList<T> {
     public void set(int index, T object) {
 
     }
+
+    public DLCIterator<T> iterator() {
+        return new DLCIterator<>(start);
+    }
+
+    private class DLCIterator<T> implements Iterator {
+
+        private Node<T> cursor;
+        private int size;
+
+        public DLCIterator(Node<T> start) {
+            this.cursor = start;
+            this.size = DLCList.this.size;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return size > 0;
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+
+        @Override
+        public Object next() {
+            Node<T> item = cursor;
+            size--;
+            cursor = cursor.getNext();
+            return item.getData();
+        }
+    }
+
+
 
 }
