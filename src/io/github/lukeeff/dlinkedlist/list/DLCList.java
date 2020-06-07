@@ -1,10 +1,11 @@
 package io.github.lukeeff.dlinkedlist.list;
 
 import java.util.Iterator;
+import java.util.List;
 
-public class DLCList<T> implements IList<T> {
+public class DLCList<E> implements IList<E> {
 
-    private Node<T> start;
+    private Node<E> start;
     private int size;
 
     public DLCList() {
@@ -13,29 +14,30 @@ public class DLCList<T> implements IList<T> {
     }
 
     @Override
-    public boolean add(int index, T element) {
-        return true;
-    }
-
-    @Override
-    public boolean add(T element) {
+    public boolean add(E element) {
         if(start == null) {
             start = new Node<>(element);
         } else {
-            final Node<T> newNode = new Node<>(element, start.getPrevious(), start);
-            final Node<T> last = start.getPrevious();
+            final Node<E> newNode = new Node<>(element, start.getPrevious(), start);
+            final Node<E> last = start.getPrevious();
             last.setNext(newNode);
-            last.setPrevious(newNode);
+            start.setPrevious(newNode);
         }
         size++;
         return true;
     }
 
-    public Node<T> getNode(int index) {
+    /**
+     * Gets a node at a target index.
+     *
+     * @param index the index of the node.
+     * @return the node at the specified index.
+     */
+    public Node<E> getNode(int index) {
         if (index >= size || index < 0) {
             throw new IndexOutOfBoundsException("bad index: " + index);
         }
-        Node<T> cursor = start;
+        Node<E> cursor = start;
         for (int i = 0; i < index; i++) {
             cursor = cursor.getNext();
         }
@@ -43,30 +45,90 @@ public class DLCList<T> implements IList<T> {
     }
 
     @Override
-    public boolean addFirst(T element) {
-        add(0, element);
+    public boolean addFirst(E element) {
+        if(size == 0) {
+            add(element);
+        } else {
+            Node<E> temp = new Node<>(element, start.getPrevious(), start);
+            start.getPrevious().setNext(temp);
+            start.setPrevious(temp);
+            start = temp;
+            size++;
+        }
         return true;
     }
 
     @Override
-    public boolean addLast(T element) {
+    public boolean addLast(E element) {
         add(element);
         return true;
     }
 
     @Override
-    public void delete(int index) {
+    public boolean addAll(List<E> elements) {
+        for (E element : elements) {
+            add(element);
+        }
+        return true;
+    }
 
+    @Override
+    public void delete(final int index) {
+        if(index == 0) {
+            deleteFirst();
+        } else if(index == size - 1) {
+            deleteLast();
+        } else {
+            Node<E> node = getNode(index);
+            node.getPrevious().setNext(node.getNext());
+            node.getNext().setPrevious(node.getPrevious());
+            node.setNull();
+            size--;
+        }
     }
 
     @Override
     public void deleteFirst() {
-        delete(0);
+        if(unhandledEerieSize()) {
+            Node<E> last = start.getPrevious();
+            Node<E> first = start;
+            start = start.getNext();
+            start.setPrevious(last);
+            last.setNext(start);
+            first.setNull();
+            size--;
+        }
+    }
+
+    /**
+     * Checks for list sizes that wont behave as intended and handles them accordingly.
+     *
+     * I had too much fun thinking of a name for this method :]
+     *
+     * @return true if an eerie sized list was handled.
+     */
+    private boolean unhandledEerieSize() {
+        if(size < 1) {
+            throw new IndexOutOfBoundsException("You just tried deleting nothing... the last guy to do that was located" +
+                    "in the center of our galaxy... think about it...");
+        } else if(size() == 1) {
+            start.setNull();
+            start = null;
+            size--;
+            return false;
+        }
+        return true;
     }
 
     @Override
     public void deleteLast() {
-        delete(size);
+        if(unhandledEerieSize()) {
+            Node<E> last = start.getPrevious();
+            last.getPrevious().setNext(start);
+            start.setPrevious(last.getPrevious());
+            last.setNull();
+            size--;
+        }
     }
 
     @Override
@@ -81,38 +143,63 @@ public class DLCList<T> implements IList<T> {
     }
 
     @Override
-    public boolean contains(T object) {
-        boolean found = false;
+    public boolean contains(E element) {
+       int index = 0;
 
-        for(int i = 0; i < size; i++) {
-            if()
-        }
-
-        return true;
+       while(index < size) {
+           if(get(index).equals(element)) {
+               return true;
+           }
+           index++;
+       }
+       return false;
     }
 
     @Override
-    public T get(int index) {
-        Node<T> node = getNode(index);
+    public E get(int index) {
+        Node<E> node = getNode(index);
         return node.getData();
     }
 
     @Override
-    public T getFirst() {
+    public E getFirst() {
         return start.getData();
     }
 
     @Override
-    public T getLast() {
+    public E getLast() {
         return start.getPrevious().getData();
     }
 
     @Override
-    public void set(int index, T object) {
-
+    public void set(int index, E element) {
+        Node<E> node = getNode(index);
+        node.setData(element);
     }
 
-    public DLCIterator<T> iterator() {
+    /**
+     * Adds new element into the list at the target index.
+     *
+     * @param index the index for the element to be stored at.
+     * @param element the element to be injected into the list.
+     */
+    @Override
+    public boolean insert(int index, E element) {
+        if(index == 0) {
+            addFirst(element);
+        } else if(index == size) {
+            addLast(element);
+        } else {
+            Node<E> location = getNode(index);
+            Node<E> node = new Node<>(element, location.getPrevious(), location);
+            location.getPrevious().setNext(node);
+            location.getNext().setPrevious(node);
+            size++;
+        }
+        return true;
+    }
+
+    public DLCIterator<E> iterator() {
         return new DLCIterator<>(start);
     }
 
@@ -132,7 +219,7 @@ public class DLCList<T> implements IList<T> {
         }
 
         public void remove() {
-            throw new UnsupportedOperationException("Not yet implemented");
+            throw new UnsupportedOperationException("I wouldn't count on this being implemented anytime soon");
         }
 
         @Override

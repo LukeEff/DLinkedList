@@ -6,7 +6,6 @@ import io.github.lukeeff.person.Person;
 public class DLinkedList {
 
     public static void main(String[] args) {
-        //foo();
     }
 
     private static void foo() {

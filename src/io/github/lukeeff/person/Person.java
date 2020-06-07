@@ -1,10 +1,16 @@
 package io.github.lukeeff.person;
 
+/**
+ * A class built with the intention to toy with the list and node code.
+ *
+ * @author lukeeff
+ * @since 1.0
+ */
 public class Person {
 
-    private String ID;
-    private String first;
-    private String last;
+    private final String ID;
+    private final String first;
+    private final String last;
 
     public Person(String first, String last, String ID)
     {
@@ -14,7 +20,7 @@ public class Person {
     }
 
     public String toString() {
-        return first;
+        return first + " " + last + "," + "ID: " + ID;
     }
 
     public String getID() {

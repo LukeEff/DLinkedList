@@ -4,6 +4,7 @@ package io.github.lukeeff.algorithm;
  * Small class practicing method recursion.
  *
  * @author lukeeff
+ * @since 1.0
  */
 public class Recursion {
 
@@ -18,7 +19,7 @@ public class Recursion {
     }
 
     /*
-     * horrible algorithm
+     * horrible algorithm. Great for draining battery :]
      */
     public static int fib(int num) {
         return (num <= 1) ? num : fib(num - 1) + (fib(num - 2));
