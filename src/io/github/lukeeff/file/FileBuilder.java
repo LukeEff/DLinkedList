@@ -4,6 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * For creating new files.
+ *
+ * @author lukeeff
+ * @since 1.1
+ */
 public class FileBuilder {
 
     private final String fileName;
